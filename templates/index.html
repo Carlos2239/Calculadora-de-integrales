@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Integrales Online</title>
+    <!-- Google Fonts para un diseño moderno -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- MathJax para renderizado de matemáticas avanzado y visualmente atractivo -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Plotly.js para las gráficas dinámicas -->
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
+    <!-- Hoja de estilos -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Integrales <span class="highlight">Pro</span></h1>
+            <p>Resuelve integrales indefinidas y definidas paso a paso, con gráficas.</p>
+        </header>
+
+        <main>
+            <!-- Sección de Entrada de Datos y Opciones -->
+            <section class="calculator-section">
+                <div class="input-display">
+                    <label for="function-input">Función \( f(x) \)</label>
+                    <div class="input-wrapper">
+                        <span class="integral-symbol">∫</span>
+                        <input type="text" id="function-input" placeholder="ej. x^2 + 2*x + 1" autocomplete="off">
+                        <span class="dx">dx</span>
+                    </div>
+                </div>
+
+                <div class="options-container">
+                    <div class="form-group">
+                        <label for="integral-type">Tipo de Integral</label>
+                        <select id="integral-type">
+                            <option value="indefinite">Integral Indefinida</option>
+                            <option value="definite">Integral Definida</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group bounds-group" id="bounds-group" style="display: none;">
+                        <label>Límites de Integración</label>
+                        <div class="bounds-inputs">
+                            <input type="text" id="lower-limit" placeholder="Lím. Inferior (a)">
+                            <input type="text" id="upper-limit" placeholder="Lím. Superior (b)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="graph-range">Rango Gráfica (X)</label>
+                        <select id="graph-range">
+                            <option value="-5,5">-5 a 5</option>
+                            <option value="-10,10" selected>-10 a 10</option>
+                            <option value="-20,20">-20 a 20</option>
+                            <option value="-50,50">-50 a 50</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Teclado en Pantalla -->
+                <div class="keypad">
+                    <!-- Fila 1 - Funciones -->
+                    <button class="key func" data-val="sin(">sin</button>
+                    <button class="key func" data-val="cos(">cos</button>
+                    <button class="key func" data-val="tan(">tan</button>
+                    <button class="key func" data-val="exp(">e^x</button>
+                    <button class="key func" data-val="log(">ln</button>
+                    <button class="key action btn-backspace" id="btn-backspace">⌫</button>
+
+                    <!-- Fila 2 - Números y Variables -->
+                    <button class="key num" data-val="7">7</button>
+                    <button class="key num" data-val="8">8</button>
+                    <button class="key num" data-val="9">9</button>
+                    <button class="key op" data-val="/">/</button>
+                    <button class="key var" data-val="pi">π</button>
+                    <button class="key var" data-val="E">e</button> <!-- Usamos E para Euler en Sympy pero e visualmente -->
+
+                    <!-- Fila 3 - Números y Paréntesis -->
+                    <button class="key num" data-val="4">4</button>
+                    <button class="key num" data-val="5">5</button>
+                    <button class="key num" data-val="6">6</button>
+                    <button class="key op" data-val="*">*</button>
+                    <button class="key op" data-val="(">(</button>
+                    <button class="key op" data-val=")">)</button>
+
+                    <!-- Fila 4 -->
+                    <button class="key num" data-val="1">1</button>
+                    <button class="key num" data-val="2">2</button>
+                    <button class="key num" data-val="3">3</button>
+                    <button class="key op" data-val="-">-</button>
+                    <button class="key var" data-val="x">x</button>
+                    <button class="key var" data-val="y">y</button>
+
+                    <!-- Fila 5 -->
+                    <button class="key num" data-val="0">0</button>
+                    <button class="key num" data-val=".">.</button>
+                    <button class="key op" data-val="^">^</button>
+                    <button class="key op" data-val="+">+</button>
+                    <button class="key action btn-clear" id="btn-clear">AC</button>
+                    <button class="key action btn-solve" id="btn-solve">RESOLVER</button>
+                </div>
+            </section>
+
+            <!-- Resultados (Ocultos inicialmente) -->
+            <section class="results-section" id="results-section" style="display: none;">
+                <div id="error-alert" class="alert error" style="display: none;"></div>
+
+                <div class="result-card">
+                    <h3>Resultado Final</h3>
+                    <div id="final-result" class="math-display"></div>
+                </div>
+
+                <div class="result-card steps-card">
+                    <h3>Pasos de Resolución</h3>
+                    <div id="steps-list" class="steps-content"></div>
+                </div>
+
+                <div class="result-card graph-card">
+                    <h3>Análisis Gráfico</h3>
+                    <div id="plot-container"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Lógica de interacciones Frontend -->
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
