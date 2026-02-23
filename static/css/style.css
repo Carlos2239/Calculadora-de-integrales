@@ -115,7 +115,7 @@ header p {
 /* Container de opciones */
 .header-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     position: relative;
     max-width: 600px;
@@ -123,6 +123,10 @@ header p {
 }
 
 .btn-history {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 1000;
     background: #1E293B;
     border: 1px solid var(--border-color);
     color: var(--text-main);
