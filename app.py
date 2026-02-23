@@ -19,12 +19,16 @@ def calculate():
     graph_range_str = data.get('graph_range', '-10,10')
     
     try:
+        import re
         x = sp.Symbol('x')
         
         # Limpieza de entrada estándar
         func_str_clean = func_str.replace('^', '**')
         # Limpieza adicional por si mandan ln
         func_str_clean = func_str_clean.replace('ln(', 'log(')
+        
+        # Insertar asteriscos explícitos entre números y variables/paréntesis/funciones (ej. 4x -> 4*x)
+        func_str_clean = re.sub(r'(\d)([a-zA-Z(])', r'\1*\2', func_str_clean)
         
         f = sp.sympify(func_str_clean)
         
@@ -44,7 +48,8 @@ def calculate():
             context = getattr(rule, 'context', getattr(rule, 'integrand', ''))
             
             if cls_name == 'ConstantTimesRule':
-                steps_list.append(f"{step_num}. Sacamos la constante \\( {sp.latex(rule.constant)} \\): \\( {sp.latex(rule.constant)} \\int {sp.latex(rule.other)} \\, dx \\)")
+                constant_val = rule.constant if hasattr(rule, 'constant') else rule.args[0]
+                steps_list.append(f"{step_num}. Sacamos la constante \\( {sp.latex(constant_val)} \\): \\( {sp.latex(constant_val)} \\int {sp.latex(rule.other)} \\, dx \\)")
                 sub_steps, step_num = format_step(getattr(rule, 'substep', None), step_num + 1)
                 steps_list.extend(sub_steps)
             elif cls_name == 'AddRule':
@@ -71,7 +76,8 @@ def calculate():
                 steps_list.append(f"{step_num}. Integral de la función exponencial: \\( e^x \\).")
                 step_num += 1
             elif cls_name == 'ConstantRule':
-                steps_list.append(f"{step_num}. Integral de una constante \\( {sp.latex(rule.constant)} \\) es \\( {sp.latex(rule.constant)}x \\).")
+                constant_val = rule.constant if hasattr(rule, 'constant') else rule.args[0]
+                steps_list.append(f"{step_num}. Integral de una constante \\( {sp.latex(constant_val)} \\) es \\( {sp.latex(constant_val)}x \\).")
                 step_num += 1
             else:
                 steps_list.append(f"{step_num}. Integramos la expresión \\( {sp.latex(context)} \\).")
@@ -89,8 +95,13 @@ def calculate():
             return steps_list, step_num
         
         if is_definite:
-            lower = float(sp.sympify(str(lower_limit_str).replace('^', '**').replace('ln(', 'log(')))
-            upper = float(sp.sympify(str(upper_limit_str).replace('^', '**').replace('ln(', 'log(')))
+            lower_str = str(lower_limit_str).replace('^', '**').replace('ln(', 'log(')
+            lower_str = re.sub(r'(\d)([a-zA-Z(])', r'\1*\2', lower_str)
+            lower = float(sp.sympify(lower_str))
+            
+            upper_str = str(upper_limit_str).replace('^', '**').replace('ln(', 'log(')
+            upper_str = re.sub(r'(\d)([a-zA-Z(])', r'\1*\2', upper_str)
+            upper = float(sp.sympify(upper_str))
             
             steps.append(f"2. Evaluamos los límites de integración: de \\( a = {lower} \\) a \\( b = {upper} \\).")
             
